@@ -107,4 +107,5 @@ def product_detail(request,slug):
     list_reviews = Product_review.objects.filter(Q(product_id=product_detail) & Q(is_publish=True)).order_by('-rating')[:5]
     average_review = product_detail.tot_review
 
+
     return render(request, template_name='myshop/product-details.html',context={'Produts':products_obj,'Product':product_detail,'Reviews':list_reviews,'average_review':average_review,'is_purchase':is_purchesed})
