@@ -1,0 +1,263 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Home{%endblock%}
+{%block style%}
+  <style>
+    .card-title-font{
+      font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .discount{
+      font-weight: 500px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    
+
+  </style>
+{%endblock%}
+
+{%block content%}
+
+<div id="spinner" class="d-flex justify-content-center ">
+    <div class="spinner-border m-5 " style="width: 10rem; height: 10rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <di id="list" class="visually-hidden container">
+        <div class="row">
+            <di class="col-md-6 col-sm-12 position-sticky">
+                <img src={{Product.img.url}} class="img-fluid" alt="">
+                <div class="d-flex  hstack gap-3 justify-content-center">
+                  
+                        <button type="button" class="btn btn-warning">Add To Cart</button>
+
+                        <button type="button" class="btn btn-warning" style="background-color: rgb(255, 145, 0);">Buy Now</button>
+                   
+                </div>
+            </di>
+            <div class="col-sm-12 col-md-6">
+                <h4 class="title display-8 p-2">
+                  {{Product.title}}
+                </h4>
+                <div class="rating p-2">
+                    <span class="badge bg-success py-1 text-center">{{average_review}}</span>
+                    <span class="text-muted">({{Product.tot_r}})</span>
+                    Ratings & 6,265 Reviews
+                </div>
+                <div class="d-flex price ">
+                          {% if Product.discount != 0 %}
+                          <h3 class="p-1 "><span class="text-success fw-bold">₹{{Product.get_discount}}</span></h3>
+                          <h4 class="p-1 px-2 d-flex align-items-end"><span class="text-decoration-line-through text-muted">₹{{Product.price}}</span></h4>
+                          <h5 class="p-1 d-flex align-items-end"><span class="text-success discount">{{Product.discount}}% off</span></h5>
+                          {%else%}
+                          <h3 class="p-1 "><span class="text-success fw-bold">₹{{Product.price}}</span></h3>
+
+                          {%endif%}
+                   
+                </div>
+                <div>
+                  <label>Availability: </label>
+                  <span class="info-deta text-success">In stock</span> 
+                </div>
+               <hr>
+                <p class="product-description text-secondary " style="font-size: 15px;">{{Product.summary|truncatewords:100}}</p>
+              
+               <hr>
+               <div class="product-detail">
+                 <div class="d-flex justify-content-between">
+                 <h5>
+                   <span>Product Details</span>
+                 </h5>
+                  <a class="btn btn-outline-primary" data-bs-toggle="collapse" href="#product-detail" role="button" aria-expanded="false" aria-controls="product-detail">
+                    +
+                  </a>
+                 </div>
+                 <div class="" id="product-detail">
+                  <table class="table table-responsive table-borderless">
+                    <tr>
+                      <td class="text-muted">Organic</td>
+                      <td>yes</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Per packege Item</td>
+                      <td>10(kG)</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Color</td>
+                      <td>Red</td>
+                    </tr>
+                 </table>
+                 </div>
+                
+               </div>
+               <hr>
+               <div class="ratting-review">
+                 <div class="d-flex p-2 justify-content-between">
+                 <h5>Ratings & Reviews</h5>
+                  <div>
+                  <span class="badge bg-success py-1 text-center">{{average_review}}</span>
+
+                    <span class="text-muted">({{Product.tot_r}})</span>
+                  </div>
+                  {% if is_purchase %}
+                  <a href="#" class="btn btn-primary text-white">Rate Product</a>
+                  {%else%}
+                  <a href="#" class="btn shadow btn-white ">Rate Product</a>
+
+                  {% endif %}
+                 </div>
+                 <div class="review">
+                 {% for review in Reviews%}
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex">
+                        <div class="col-1">
+                          {% if review.rating != None %}
+                          {% if review.rating >= 3 %}
+                          <span class="badge bg-success py-1 text-center">
+                              {{review.rating}}.0
+                          </span>
+                          {% elif review.rating >= 2 %}
+                          <span class="badge bg-warning py-1 text-center">
+                            {{review.rating}}.0
+                          </span>
+                          {%else%}
+                          <span class="badge bg-danger py-1 text-center">
+                            {{review.rating}}.0
+                          </span>
+                          {%endif%}
+                          {%endif%}
+     
+                        </div>
+                        <div class="col">
+                          <span class="card-title"> {{review.title}}</span>
+
+                        </div>
+                      </div>
+                     
+                      <p class="card-text mt-2" style="font-size: 14px;">{{review.content|truncatewords:100}}</p>
+                      <div class="d-flex text-muted hstack gap-3">
+                        <span>{{review.user_id.first_name}}</span>                
+                        <span>{{review.published_at}}</span>
+
+                      </div>
+                      
+                      {{review.sub_review | safe}}
+                    </div>
+                  </div>
+                 
+                  {%endfor%}
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex text-muted justify-content-between">
+                        <a href="#">View All</a>
+                        <span>1200 ratings & 50 reviews</span>
+                      </div>
+                      
+                      
+                    </div>
+                  </div>
+                 </div>
+               </div>
+            </div>
+        </div>
+        <div class="row infinite-container d-flex  row-cols-md-3 row-cols-md-3 row-cols-lg-5 row-cols-xl-8 row-cols-sm-2  g-4">
+   
+          {% for product in Produts %}
+         
+          <div class="infinite-item">
+            <div class="card">
+              <div class="position-relative">
+                <a href="{{product.product_id.get_absolute_url}}" target="_blank">
+                  <img src="{{product.product_id.img.url}}" class="card-img-top" alt="...">
+                </a> 
+              <i class="bi bi-heart-fill text-secondary position-absolute" onclick="save_wishlist(this)" style="top:10px;right:20px;cursor: pointer;"></i>
+              </div>
+              
+              <div class="card-body">
+                <div class="d-flex justify-content-strat">
+                <h5 class="card-title d-inline  card-title-font">{{product.title|truncatechars:25}}</h5>
+                
+                </div>
+                <div class="d-flex">
+                  <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
+                </div>
+                <div class="d-flex justify-content-strat">
+                  {% if product.tot_review != 0 %}
+                  <div style="font-size: 13px;margin-right:10px ;">
+                  {% if product.tot_review >= '3.0' %}
+                  <span class="badge bg-success py-1 text-center">
+                      {{product.tot_review}}
+                  </span>
+                  {% elif product.tot_review >= '2.0' %}
+                  <span class="badge bg-warning py-1 text-center">
+                    {{product.tot_review}}
+                  </span>
+                  {%else%}
+                  <span class="badge bg-danger py-1 text-center">
+                    {{product.tot_review}}
+                  </span>
+                  {%endif%}
+                  </div>
+                  <span class="text-muted" style="font-size: 13px;">({{product.tot_r}})</span>
+                  {%endif%}
+                </div>
+                <div class="d-flex justify-content-between">
+                  {% if product.discount != 0 %}
+                  <span class="text-success fw-bold">₹{{product.get_discount}}</span>
+                  <span class="text-decoration-line-through text-muted">₹{{product.price}}</span>
+                  <span class="text-success discount">{{product.discount}}% off</span>
+                  {%else%}
+                  <span class="text-success fw-bold">₹{{product.price}}</span>
+      
+                  {%endif%}
+                </div>
+                <div class="d-flex">
+                  <span class="text-success fw-bold" style="font-size: small;">Lowest price in 15 days</span>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+        {%endfor%}
+        </div>
+  </di>
+
+{%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+
+  let spinner = document.getElementById('spinner');
+  let list = document.getElementById('list');
+
+  $.ajax({
+    type:'GET',
+    url:'/',
+    success: function(res){
+      setTimeout(()=>{
+        spinner.classList.add('visually-hidden');
+        list.classList.remove('visually-hidden');
+        spinner.remove();
+        
+      },0)
+    },
+    error: function(er){
+      spinner.classList.remove('visually-hidden');
+        list.classList.add('visually-hidden');
+        list.remove();
+    }
+  });
+
+  function save_wishlist(element){
+    element.classList.toggle('text-danger');
+  }
+</script>
+{%endblock%}
+

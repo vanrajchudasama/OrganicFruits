@@ -1,0 +1,127 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Home{%endblock%}
+{%block style%}
+  <style>
+    .card-title-font{
+      font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .discount{
+      font-weight: 500px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+  </style>
+{%endblock%}
+{%block slider%}
+{% include 'myshop/slider.html'%}
+{%endblock%}
+{%block content%}
+<div id="spinner" class="d-flex justify-content-center visually-hidden">
+  <div class="spinner-border m-5 " style="width: 10rem; height: 10rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+<div class="list">
+  
+    <hr>
+    <div class="d-flex ">
+      <div class="col-4">
+    <h6 class=" d-block">Products</h6>
+    <span class="text-muted">Category</span>
+  
+      </div>
+      <div class="col-8">
+  
+     
+    <ul class="nav justify-content-strat">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">All</a>
+      </li>
+      {% for category in Categories%}
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">{{category.title|upper}}</a>
+      </li>
+      {%endfor%}
+     
+    </ul>
+  </div>
+    </div>
+  <hr>
+  <div class="row d-flex row-cols-3 row-cols-md-3 row-cols-md-6  g-4">
+    {% for product in MostViewed%}
+    
+    <div class="col">
+      <div class="card">
+        <div class="position-relative">
+          <a href="{{product.product_id.get_absolute_url}}" target="_blank">
+            <img src="{{product.product_id.img.url}}" class="card-img-top" alt="...">
+          </a> 
+        <i class="bi bi-heart-fill text-secondary position-absolute" onclick="save_wishlist(this)" style="top:10px;right:20px;cursor: pointer;"></i>
+        </div>
+        
+        <div class="card-body">
+          <div class="d-flex justify-content-strat">
+          <h5 class="card-title d-inline  card-title-font">{{product.product_id.title|truncatechars:25}}</h5>
+          
+          </div>
+          <div class="d-flex">
+            <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
+          </div>
+          <div class="d-flex justify-content-strat">
+            {% if product.product_id.tot_review != 0 %}
+            {% if product.product_id.tot_review >= '3.0' %}
+            <span class="badge bg-success py-1 text-center">
+                {{product.product_id.tot_review}}
+            </span>
+            {% elif product.product_id.tot_review >= '2.0' %}
+            <span class="badge bg-warning py-1 text-center">
+              {{product.product_id.tot_review}}
+            </span>
+            {%else%}
+            <span class="badge bg-danger py-1 text-center">
+              {{product.product_id.tot_review}}
+            </span>
+            {%endif%}
+            <span class="text-muted">({{product.product_id.tot_r}})</span>
+            {%endif%}
+          </div>
+          <div class="d-flex justify-content-between">
+            {% if product.product_id.discount != 0 %}
+            <span class="text-success fw-bold">₹{{product.product_id.get_discount}}</span>
+            <span class="text-decoration-line-through text-muted">₹{{product.product_id.price}}</span>
+            <span class="text-success discount">{{product.product_id.discount}}% off</span>
+            {%else%}
+            <span class="text-success fw-bold">₹{{product.product_id.price}}</span>
+
+            {%endif%}
+          </div>
+          <div class="d-flex">
+            <span class="text-success fw-bold" style="font-size: small;">Lowest price in 15 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {%endfor%}
+    </div>
+</div>
+
+
+{%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+
+  let spinner = document.getElementById('spinner');
+  let list = document.getElementById('list');
+
+  function save_wishlist(element){
+    element.classList.toggle('text-danger');
+  }
+</script>
+{%endblock%}

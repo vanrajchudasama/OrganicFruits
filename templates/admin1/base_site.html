@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h4 id="site-name " class="text-center bg-info p-2 text-light"><a href="{% url 'admin:index' %}" class="text-white"> {{ site_header|default:_('Django administration') }}</a></h4>
+{% endblock %}
+<h1>vanraj</h1>
+{% block nav-global %}{% endblock %}

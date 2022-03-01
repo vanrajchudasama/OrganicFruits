@@ -1,0 +1,94 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Profile{%endblock%}
+{%block content%}
+{% if messages %}
+{% for message in messages %}
+
+{% if message.tags == 'success' %}
+
+
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{{ message.tags |upper }} : </strong>  {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{%else%}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>{{ message.tags |upper }} : </strong>  {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+<div class="row justify-content-center p-5 ">
+
+<div class="col-md-8 m-2  border border-success  p-2">
+    <div class="p-2">
+      {% if eform%}
+      <h4>Personal Information <small class="ml-2" ><a id="pedit" onclick="pedit()" style="cursor: pointer;" href="#" >Edit</a></small></h4>
+      <form action="" method="post">
+        {% csrf_token %}
+        
+        <div class="row">
+        <div class="col">
+          <input type="text" name="{{eform.first_name.name}}" id="{{eform.first_name.auto_id}}" value="{{CustomUser.first_name}}" style="cursor:no-drop" class="form-control disable" placeholder="First Name" disabled>
+        </div>
+        <div class="col">
+          <input type="text" name="{{eform.last_name.name}}" id="{{eform.last_name.auto_id}}" value="{{CustomUser.last_name}}"  style="cursor:no-drop" class="form-control" placeholder="Last Name" disabled>
+        </div>
+       
+      </div>
+     <div class="row">
+       <div class="col">
+        <div class="mt-3">
+          Your Gender
+        </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" style="cursor:no-drop" type="radio" 
+           {% if CustomUser.gender == 'male' %}checked{%endif%}
+            name="inlineRadioOptions" id="inlineRadio1" value="male" disabled>
+            <label class="form-check-label" for="inlineRadio1">Male</label>
+          </div>
+         
+          <div class="form-check form-check-inline">
+            <input class="form-check-input"  style="cursor:no-drop" type="radio" name="inlineRadioOptions" value="female" {% if CustomUser.gender == 'female' %}checked{%endif%} id="inlineRadio2" disabled>
+            <label class="form-check-label"  for="inlineRadio2">Female</label>
+          </div>
+       </div>
+       <div class="col">
+        <div class="mt-3">
+         Date of Birth
+        </div>
+        <div class="form-group">
+          <input type="date" name="dob" id="dob" value="{{CustomUser.dob|date:'Y-m-d'}}"  style="cursor:no-drop"  class="form-control" disabled>
+         </div>
+       </div>
+     </div> 
+     <diw class="row">
+      <div class="col">
+        <h4 class=" mt-3">Email Address</h4>
+      <div class="form-group">
+        <input type="text" name="{{eform.email.name}}" id="{{eform.email.auto_id}}" value="{{CustomUser.email}}"  style="cursor:no-drop" class="form-control" placeholder="Email Address" disabled>
+      </div>
+      </div>
+      <div class="col">
+        <h4 class=" mt-3">Mobile No.</h4>
+        <div class="form-group">
+          <input type="text" name="{{eform.custmobile.name}}" id="mobile" value="{{CustomUser.custmobile}}"  style="cursor:no-drop" class="form-control" placeholder="Mobile" disabled>
+        </div>
+      </div>
+    </div>
+     <div id="btnPInfo" class="text-center">
+       <input type="submit" class="btn btn-primary" value="Save">
+     </div>        
+      </form>
+      {%endif%}
+    </div>
+  </div>
+  {%endblock%}
+
+  {%block script%}
+  {{block.super}}
+  {%endblock%}

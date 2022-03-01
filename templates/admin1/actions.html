@@ -1,0 +1,53 @@
+{% load i18n %}
+  {% block actions %}
+<div class="action p-1">
+    <div class="row gx-1 ">
+      <div class="col-9">
+        <div class="d-flex">
+    {% block actions-form %}
+    <div>
+      <select class="form-control form-control-sm" name="action" aria-label="Default select example"  required="">
+        <option value="" selected="">---------</option>
+        <option value="delete_selected">Delete selected custom users</option>
+
+      </select>
+      </div>
+    {% endblock %}
+    
+    {% block actions-submit %}
+    <div>
+    <button type="submit" class="mx-2 btn btn-sm btn-info" title="{% translate "Run the selected action" %}" name="index" value="{{ action_index|default:0 }}">{% translate "Go" %}</button>
+    </div>
+    {% endblock %}
+
+    {% block actions-counter %}
+    <div>
+    {% if actions_selection_counter %}
+        <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
+        {% if cl.result_count != cl.result_list|length %}
+        <span class="all hidden">{{ selection_note_all }}</span>
+        <span class="question hidden">
+            <a href="#" title="{% translate "Click here to select the objects across all pages" %}">{% blocktranslate with cl.result_count as total_count %}Select all {{ total_count }} {{ module_name }}{% endblocktranslate %}</a>
+        </span>
+        <span class="clear hidden"><a href="#">{% translate "Clear selection" %}</a></span>
+        {% endif %}
+    {% endif %}
+    </div>
+    {% endblock %}
+    </div>
+  </div>
+  <div class="col-3">
+    <select class="float-right form-control" name="" id="">
+      <option value="">1</option>
+      <option value="">1</option>
+      <option value="">1</option>
+      <option value="">1</option>
+
+  </select>
+
+    </div>
+
+    </div>
+</div>
+
+  {% endblock %}

@@ -1,0 +1,286 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Profile | My Shop{%endblock%}
+{%block style%}
+<style>
+  
+.avatar-upload {
+  position: relative;
+  max-width: 205px;
+  margin: 50px auto;
+}
+.avatar-upload .avatar-edit {
+  position: absolute;
+  right: 12px;
+  z-index: 1;
+  top: 10px;
+}
+.avatar-upload .avatar-edit input {
+  display: none;
+}
+.avatar-upload .avatar-edit input + label {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 0;
+  border-radius: 100%;
+  background: #ffffff;
+  border: 1px solid transparent;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font-weight: normal;
+  transition: all 0.2s ease-in-out;
+}
+.avatar-upload .avatar-edit input + label:hover {
+  background: #f1f1f1;
+  border-color: #d6d6d6;
+}
+.avatar-upload .avatar-edit input + label:after {
+  font-family: "FontAwesome";
+  color: #757575;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  margin: auto;
+}
+.avatar-upload .avatar-preview {
+  width: 192px;
+  height: 192px;
+  position: relative;
+  border-radius: 100%;
+  border: 6px solid #f8f8f8;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+.avatar-upload .avatar-preview > div {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+</style>
+{%endblock%}
+{%block content%}
+{% if messages %}
+{% for message in messages %}
+
+{% if message.tags == 'success' %}
+
+
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{{ message.tags |upper }} : </strong>  {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{%else%}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>{{ message.tags |upper }} : </strong>  {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+<div class="row  p-5 ">
+<div class="col-3">
+
+
+
+
+ <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width:280px;">
+   
+    <div class="d-flex flex-row hstack gap-3">
+        <div class="col-12">
+         <form action="{% url 'image_update'%}" id="my_form" name="my_form" method="post" enctype="multipart/form-data">
+           {% csrf_token %}
+          <div class="avatar-upload">
+            <div class="avatar-edit">
+                <input type='file' name="profile" id="profile_id" accept=".png, .jpg, .jpeg" />
+                <label for="profile_id">
+                  &#xF4CA;
+              </label>
+            </div>
+            <div class="avatar-preview">
+              {%if Profile.profile %}
+                <div id="imagePreview" style="background-image: url({{Profile.profile.url}});">
+                </div>
+                {%else%}
+                <div id="imagePreview" style="background-image: url(/media/profile/no_images.png);">
+                </div>
+                {%endif%}
+            </div>
+        </div>
+        <input class="d-none" type="submit" value="change">
+      </form>
+        </div>
+      </div>
+        <div class="row">
+         <div class="col-12">
+            <div class="" style="font-size: 13px;">Hello,</div>
+            <div class="fs-6 fw-bold">{{Profile.full_name}}</div>
+         </div>
+       </div>
+      
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto ">
+      <li>
+        <a href="#" class="nav-link active link-dark">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          ACCOUNT SETTINGS
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link link-dark">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+          MY ORDERS
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link link-dark">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+          MY CHATS
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link link-dark">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+          PAYMENTS
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link link-dark">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+          Logout
+        </a>
+      </li>
+    </ul>
+    <hr>
+    
+  </div>
+  </div>
+  <div class="col-9 bg-light p-4">
+    <div class="row justify-content-center">
+
+    
+    <form action="" method="post">
+      {% csrf_token %}
+      <h5>Personal Information</h5>
+      <hr>
+    <div class="row">
+
+      <div class="col-4"><div class="form-row">
+        <input type="text" name="{{eform.first_name.name}}" id="{{eform.first_name.auto_id}}" value="{{Profile.first_name}}" class="form-control" placeholder="first name">
+        <span class="text-danger">
+        {{eform.first_name.errors}}
+        </span>
+      </div></div>
+      <div class="col-4"> <div class="form-group">
+        <input type="text" name="{{eform.last_name.name}}" id="{{eform.last_name.auto_id}}" value="{{Profile.last_name}}"  class="form-control" placeholder="last name">
+        <span class="text-danger">
+        {{eform.last_name.errors}}
+        </span>
+      </div></div>
+      <div class="col-4"></div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-4">  <div class="form-group">
+        <input type="text" name="{{eform.email.name}}" id="{{eform.email.auto_id}}" value="{{Profile.email}}"  class="form-control" placeholder="email address">
+        <span class="text-danger">
+        {{eform.email.errors}}
+        </span>
+      </div></div>
+      <div class="col-4"> <div class="form-group">
+        <input type="text" name="{{eform.mobile.name}}" id="{{eform.mobile.auto_id}}" value="{{Profile.mobile}}"  class="form-control" placeholder="mobile">
+        <span class="text-danger">
+        {{eform.mobile.errors}}
+
+        </span>
+      </div></div>
+      <div class="col-4"></div>
+    </div>
+   <div class="d-flex flex-row mt-3">
+     <div class="col-4 mt-">
+     <label for="" class="px-4">Gender</label>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="{{eform.gender.name}}" id="{{eform.gender.auto_id}}" {% if Profile.gender == 'male' %}checked{%endif%} value="male">
+        <label class="form-check-label" for="inlineRadio1">Male</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="{{eform.gender.name}}" id="{{eform.gender.auto_id}}" {% if Profile.gender == 'female' %}checked{%endif%} value="female">
+        <label class="form-check-label" for="inlineRadio2">Female</label>
+      </div>
+      <div class="ml-3">
+        <span class="text-danger">
+        {{eform.gender.errors}}
+        </span>
+      </div>
+      </div>
+      <div class="col-4">
+        
+        <div class="form-group">
+          <input type="date" name="{{eform.dob.name}}" id="{{eform.dob.auto_id}}" value="{{Profile.dob|date:'Y-m-d'}}" placeholder="date of birth"  style="cursor:no-drop"  class="form-control">
+          <span class="text-danger">
+          {{eform.dob.errors}}
+          </span>
+         </div>
+       </div>
+    </div>
+    <div class="d-flex mt-5 justify-content-center">
+    <input type="submit" value="Save" class="btn btn-success">
+     </div>
+
+        
+       
+      </form>
+      </div>
+  </div>
+  </div>
+  {%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+  function readURL(input) {
+   p_url="{{user.profile}}";
+   url_1=document.getElementById("profile_id").value;
+   
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        url_1=document.getElementById("profile_id").value;
+        reader.onload = function(e) {
+          // data = JSON.parse(data);
+          // img_url=data.url;
+            $('#imagePreview').css('background-image', 'url('+e.target.result +')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+            // document.forms['my_form'].submit();
+            var imgfile = input.files[0];
+            
+            $.ajax({
+        		url: "/accounts/profile/image/update/",
+				    method:"post",
+            enctype:"multipart/form-data",
+        		data : {img_url:imgfile},
+        		success : function(json) {
+           		 $("#request-access").hide();
+
+            	console.log("requested access complete");
+        }
+    });
+        }
+        reader.readAsDataURL(input.files[0]);
+       
+    }
+}
+$("#profile_id").change(function() {
+    // readURL(this);
+    var imgfile = this.files[0];
+    document.getElementById("my_form").submit();
+    
+});
+</script>
+{%endblock%}

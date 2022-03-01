@@ -1,0 +1,72 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Registration{%endblock%}
+{%block style%}
+<style>
+    .errorlist{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    .errorlist > li{
+        display: inline;
+        color: red;
+    }
+</style>
+{%endblock%}
+{%block content%}
+<!-- ----------------------------------start messages----------------------------------------- -->
+
+{% if messages %}
+{% for message in messages %}
+
+{% if message.tags == 'success' %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+<strong>{{ message.tags |upper }} : </strong> {{ message }}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+</div>
+
+{%else%}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+<strong>{{ message.tags|upper }}</strong> : {{ message }}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+</div>
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+<!-- ----------------------------------end messages----------------------------------------- -->
+
+<div class="row justify-content-center m-3">
+
+    <div class="col-lg-4 col-sm-12 col-md-6  shadow p-3 border border-success rounded">
+        <h5 class="alert alert-success text-center p-2">Register</h5>
+        <form action="" method="post" novalidate>
+            {% csrf_token %}
+            {{form.as_p}}
+            <hr class="bg-success">
+            <div class="d-flex flex-row justify-content-center">
+                
+                <input type="submit" value="Register" class="btn btn-block btn-success">
+                
+            </div>
+            <div class="d-flex p-2 justify-content-center">
+                <a href="{%url 'login'%}">You have aleready Account ? Login</a>
+
+            </div>
+        </form>
+    </div>
+</div>
+{%endblock%}
+
+
+{%block script%}
+{{block.supper}}
+
+{%endblock%}
+
