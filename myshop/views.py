@@ -6,9 +6,11 @@ import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 from itertools import chain 
+from django.views.decorators.cache import never_cache
 
 def my_fun(desc):
     for t in desc:
@@ -68,6 +70,13 @@ def home(request):
     
     return render(request, template_name='myshop/index.html',context=list_product)    
 
+def product_recomanded(product_obj):
+    product_title=product_obj.title
+    product_desc=product_obj.summary
+    c_p=Product_category.objects.filter(product_id=product_obj)
+    c_p=Product_category.objects.filter(Q(category_id__title__icontains=c_p.category_id.title) | Q(category_id__content__icontains=c_p.category_id.content))
+    list_product=Product.objects.filter(title__icontains=product_title,summary__icontains=product_desc)
+    return 0
 def product_list(request,title):
     most_viewed_product=Product_Viewed.objects.filter(user_id=request.user).order_by('-tot_views')[0:6]
 
@@ -85,7 +94,7 @@ def product_detail(request,slug):
 
     category_obj=Category.objects.get(id=products_obj.category_id.id)
     print(category_obj)
-    products_obj=Product_category.objects.filter(category_id__title__contains=category_obj).distinct('product_id__id')
+    products_obj=Product_category.objects.filter(category_id__title__contains=category_obj)
     # print(products_obj.product_id.title)
 
     # products_obj=Product.objects.filter(title__icontains=products_obj.product_id.title)
@@ -106,6 +115,25 @@ def product_detail(request,slug):
     # product_detail=Product.objects.filter(slug=slug)
     list_reviews = Product_review.objects.filter(Q(product_id=product_detail) & Q(is_publish=True)).order_by('-rating')[:5]
     average_review = product_detail.tot_review
-
-
     return render(request, template_name='myshop/product-details.html',context={'Produts':products_obj,'Product':product_detail,'Reviews':list_reviews,'average_review':average_review,'is_purchase':is_purchesed})
+
+@csrf_exempt
+def product_reviews(request,id,slug):
+    
+    product_obj=get_object_or_404(Product, slug=slug,id=id)
+    if request.POST:
+        review_filtesr=''
+        get_val=request.POST.get('filter')
+        if get_val=='MOST_RECENT':
+            review_filtesr='-published_at'
+        elif get_val=='POSITIVE_FIRST':
+            review_filtesr='-rating'
+        elif get_val=='NEGATIVE_FIRST':
+            review_filtesr='rating'
+        product_reviews_obj=Product_review.objects.filter(product_id=product_obj).order_by(review_filtesr)
+        review_filtesr=''
+        return render(request, template_name='myshop/filter-table.html',context={'Products':product_obj,'Reviews':product_reviews_obj})
+    else:
+        product_reviews_obj=Product_review.objects.filter(product_id=product_obj).order_by('-rating')
+   
+    return render(request, template_name='myshop/review.html',context={'Products':product_obj,'Reviews':product_reviews_obj})

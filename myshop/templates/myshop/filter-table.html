@@ -1,0 +1,29 @@
+{% for review in Reviews%}
+<div  class="border p-2">
+   <div class="d-flex  g-5">
+    {% if review.rating != None %}
+    {% if review.rating >= 3 %}
+    <span class="badge bg-success py-1 text-center">
+        {{review.rating}}.0
+    </span>
+    {% elif review.rating >= 2 %}
+    <span class="badge bg-warning py-1 text-center">
+      {{review.rating}}.0
+    </span>
+    {%else%}
+    <span class="badge bg-danger py-1 text-center">
+      {{review.rating}}.0
+    </span>
+    {%endif%}
+    {%endif%}
+       <div class="ps-2">{{review.title}}</div>
+   </div>
+   <div class="mt-2">
+       <p>{{review.content|truncatewords:100}}</p>
+      <div class="d-flex text-muted hstack gap-3">
+        <span>{{review.user_id.first_name}}</span>
+        <span>{{review.published_at}}</span>
+      </div>
+   </div>
+</div>
+{%endfor%}

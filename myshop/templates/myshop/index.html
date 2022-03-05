@@ -33,7 +33,6 @@
   <hr>
   <div class="row d-flex row-cols-3 row-cols-md-3 row-cols-md-6  g-4">
     {% for product in MostViewed%}
-    
     <div class="col">
       <div class="card">
         <div class="position-relative">
@@ -51,7 +50,7 @@
           <div class="d-flex">
             <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
           </div>
-          <div class="d-flex justify-content-strat">
+          <div class="d-flex justify-content-strat" style="font-size: 13px;">
             {% if product.product_id.tot_review != 0 %}
             {% if product.product_id.tot_review >= '3.0' %}
             <span class="badge bg-success py-1 text-center">
@@ -66,7 +65,9 @@
               {{product.product_id.tot_review}}
             </span>
             {%endif%}
-            <span class="text-muted">({{product.product_id.tot_r}})</span>
+            <span class="text-muted" style="margin-left: 10px;">({{product.product_id.tot_r}})</span>
+            {%else%}
+            <span style="padding: 10.1px;"></span>
             {%endif%}
           </div>
           <div class="d-flex justify-content-between">
@@ -125,7 +126,7 @@
           <div class="d-flex">
             <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
           </div>
-          <div class="d-flex justify-content-strat">
+          <div class="d-flex justify-content-strat" style="font-size: 13px;">
             {% if product.product_id.tot_review != 0 %}
             {% if product.product_id.tot_review >= '3.0' %}
             <span class="badge bg-success py-1 text-center">
@@ -140,7 +141,9 @@
               {{product.product_id.tot_review}}
             </span>
             {%endif%}
-            <span class="text-muted">({{product.product_id.tot_r}})</span>
+            <span class="text-muted" style="margin-left: 10px;">({{product.product_id.tot_r}})</span>
+            {%else%}
+            <span style="padding: 10.1px;"></span>
             {%endif%}
           </div>
           <div class="d-flex justify-content-between">
