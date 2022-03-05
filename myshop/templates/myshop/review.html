@@ -1,0 +1,135 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Home{%endblock%}
+{%block style%}
+  <style>
+    .card-title-font{
+      font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .discount{
+      font-weight: 500px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+  </style>
+{%endblock%}
+
+{%block content%}
+{% if Products %}
+<div class="row mt-1">
+    <div class="col-3 border">
+      <div class="card">
+        <div class="position-relative">
+          <a href="{{Products.get_absolute_url}}" target="_blank">
+            <img src="{{Products.img.url}}" class="card-img-top" alt="...">
+          </a> 
+        <i class="bi bi-heart-fill text-secondary position-absolute" onclick="save_wishlist(this)" style="top:10px;right:20px;cursor: pointer;"></i>
+        </div>
+        
+        <div class="card-body">
+          <div class="d-flex justify-content-strat">
+          <h5 class="card-title d-inline  card-title-font">{{Products.title|truncatechars:25}}</h5>
+          
+          </div>
+          <div class="d-flex">
+            <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
+          </div>
+          <div class="d-flex justify-content-strat" style="font-size: 13px;">
+            {% if Products.tot_review != 0 %}
+            {% if Products.tot_review >= '3.0' %}
+            <span class="badge bg-success py-1 text-center">
+                {{Products.tot_review}}
+            </span>
+            {% elif Products.tot_review >= '2.0' %}
+            <span class="badge bg-warning py-1 text-center">
+              {{Products.tot_review}}
+            </span>
+            {%else%}
+            <span class="badge bg-danger py-1 text-center">
+              {{Products.tot_review}}
+            </span>
+            {%endif%}
+            <span class="text-muted" style="margin-left: 10px;">({{Products.tot_r}})</span>
+            {%else%}
+            <span style="padding: 10.1px;"></span>
+            {%endif%}
+          </div>
+          <div class="d-flex justify-content-between">
+            {% if Products.discount != 0 %}
+            <span class="text-success fw-bold">₹{{Products.get_discount}}</span>
+            <span class="text-decoration-line-through text-muted">₹{{Products.price}}</span>
+            <span class="text-success discount">{{Products.discount}}% off</span>
+            {%else%}
+            <span class="text-success fw-bold">₹{{Products.price}}</span>
+
+            {%endif%}
+          </div>
+          <div class="d-flex">
+            <span class="text-success fw-bold" style="font-size: small;">Lowest price in 15 days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-9 p-0">
+        <div class="d-flex border p-2 pt-3">
+            <div class="col-9 ">
+                <div  style="font-size: large; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">{{Products.title}}</div>
+            </div>
+            <div class="col-2 ">
+                <select class="form-select" id="filter">
+                  <!-- <option value="MOST_HELPFUL" selected="">Most Helpful</option> -->
+                  <option value="MOST_RECENT">Most Recent</option>
+                  <option value="POSITIVE_FIRST">Positive First</option>
+                  <option value="NEGATIVE_FIRST">Negative First</option>
+                </select>
+            </div>
+        </div>
+        <div id="review">
+       {% include 'myshop/filter-table.html'%}
+       </div>
+    </div>
+</div>
+{%endif%}
+{%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+
+  let spinner = document.getElementById('spinner');
+  let list = document.getElementById('list');
+
+  function save_wishlist(element){
+    element.classList.toggle('text-danger');
+  }
+  $("#filter").change(function () {
+    // filter_value=document.getElementById('filter').velues;
+    filter_val=$(this).val();
+    
+
+    $.ajax({
+      
+      url: "{% url  'product_reviews' Products.slug  Products.id %}",
+      data:{
+        'filter':$(this).val(),
+        
+      },
+      type: 'POST',
+      dataType:'html',
+      success: function (data) {
+        // console.log("success");
+        
+        $('#review').replaceWith($('#review').html(data));
+        
+      },
+      error: function () {
+        console.log("error");
+      },
+    });
+  });
+</script>
+{%endblock%}

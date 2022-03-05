@@ -34,7 +34,7 @@ class ProductMetaInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     save_on_top = True
-
+    using='mysql'
     autocomplete_fields = ['user_id']
     list_display_links=['user_id',upper_case_title,'image']
     list_per_page = 5
@@ -78,6 +78,15 @@ class ProductAdmin(admin.ModelAdmin):
         if obj.img:
             return mark_safe('<img src="{}"  width="200" height="200" style="width:100px;height:100px;max-width:100px;" />'.format(obj.img.url))
         return "No image"
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
     # add_fieldsets = (
     #     (None, {
     #         'classes': ('wide'),
@@ -93,23 +102,61 @@ class ProductAdmin(admin.ModelAdmin):
     #     js = ("new/js/jquery.js",)
 @admin.register(Product_meta)
 class ProductMetaAdmin(admin.ModelAdmin):
+    using='mysql'
     autocomplete_fields = ['product_id']
     raw_id_fields = ("product_id",)
     list_display=['product_id','key','content']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
 
 
 @admin.register(Product_review)
 class ProductReiewAdmin(admin.ModelAdmin):
+    using='mysql'
     list_display=['product_id','parent_id','title','rating','is_publish','created_at','published_at','content']
     search_fields = ['title','rating']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        # obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
+    using='mysql'
     prepopulated_fields={'slug':('meta_title',)}
     list_display=['title','parent_id','meta_title','slug','content']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 @admin.register(Product_category)
 class ProductCategoryAdmin(admin.ModelAdmin):
+    using='mysql'
     list_display=['product_id','category_id']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 
 
 
@@ -118,22 +165,53 @@ class EmailSendAdmin(admin.ModelAdmin):
     def Email_send(self):
         pass
 
+
 # -------------------------------Start Tag Table-----------------------------------------
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
+    using='mysql'
     prepopulated_fields={'slug':('meta_title',)}
     list_display=['title','meta_title','slug','content']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 @admin.register(Product_tag)
 class ProductTagAdmin(admin.ModelAdmin):
+    using='mysql'
     list_display=['product_id','tag_id']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 # -------------------------------End Tag Table-------------------------------------------
 
 # ---------------------------------start cart table-----------------------------------------
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
+    using='mysql'
     list_display=['user_id','session_id','token','status','first_name','last_name','mobile','email','line1','line2','city','province','country','created_at','updatedAt','content']
     autocomplete_fields = ['user_id']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using=self.using)
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 # ---------------------------------end cart table-------------------------------------------
 
 
@@ -141,6 +219,16 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Cart_item)
 class CartAdmin(admin.ModelAdmin):
+    using='mysql'
     list_display=['product_id','cart_id','sku','price','discount','quantity','active','created_at','updated_at','content']
     autocomplete_fields = ['product_id']
+    def save_model(self, request, obj, form, change):
+        # Tell Django to save objects to the 'other' database.
+        obj.save(using='default')
+        obj.save(using='mysql')
+    def delete_model(self, request, obj):
+        # Tell Django to delete objects from the 'other' database
+        obj.delete(using=self.using)
+        obj.delete(using='default')
+
 # ---------------------------------end cart-items table-------------------------------------------
