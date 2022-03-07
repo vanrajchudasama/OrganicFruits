@@ -105,63 +105,26 @@
                     <span class="text-muted">({{Product.tot_r}})</span>
                   </div>
                   {% if is_purchase %}
-                  <a href="#" class="btn btn-primary text-white">Rate Product</a>
+                  <a href="{% url 'product_reviews_form' Product.slug Product.id %}" class="btn btn-primary text-white">Rate Product</a>
                   {%else%}
                   <a href="#" class="btn shadow btn-white ">Rate Product</a>
 
                   {% endif %}
                  </div>
-                 <div class="review">
-                 {% for review in Reviews%}
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <div class="col-1">
-                          {% if review.rating != None %}
-                          {% if review.rating >= 3 %}
-                          <span class="badge bg-success py-1 text-center">
-                              {{review.rating}}.0
-                          </span>
-                          {% elif review.rating >= 2 %}
-                          <span class="badge bg-warning py-1 text-center">
-                            {{review.rating}}.0
-                          </span>
-                          {%else%}
-                          <span class="badge bg-danger py-1 text-center">
-                            {{review.rating}}.0
-                          </span>
-                          {%endif%}
-                          {%endif%}
-     
-                        </div>
-                        <div class="col">
-                          <span class="card-title"> {{review.title}}</span>
-
-                        </div>
-                      </div>
-                     
-                      <p class="card-text mt-2" style="font-size: 14px;">{{review.content|truncatewords:100}}</p>
-                      <div class="d-flex text-muted hstack gap-3">
-                        <span>{{review.user_id.first_name}}</span>                
-                        <span>{{review.published_at}}</span>
-
-                      </div>
-                      
-                      {{review.sub_review | safe}}
-                    </div>
-                  </div>
-                 
-                  {%endfor%}
+                 <div  id="review" class="review">
+                  {% include 'myshop/filter-table.html'%}
+                  {% if Reviews %}
                   <div class="card">
                     <div class="card-body">
                       <div class="d-flex text-muted justify-content-between">
                         <a href="{% url  'product_reviews' Product.slug Product.id %}">View All</a>
-                        <span>1200 ratings & 50 reviews</span>
+                        <span>{{Product.tot_rating}} ratings & {{Product.tot_r}} reviews</span>
                       </div>
                       
                       
                     </div>
                   </div>
+                  {%endif%}
                  </div>
                </div>
             </div>

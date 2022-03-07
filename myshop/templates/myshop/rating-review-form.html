@@ -1,0 +1,273 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Home{%endblock%}
+{%block style%}
+  <style>
+    .card-title-font{
+      font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .discount{
+      font-weight: 500px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+  </style>
+{%endblock%}
+
+{%block content%}
+<div class="row position-relative">
+    <div class="col-md-3 col-sm-12  border">
+        <div class="card">
+          <div class="position-relative">
+            <a href="{{Products.get_absolute_url}}" target="_blank">
+              <img src="{{Products.img.url}}" class="card-img-top img-fluid img-thumbnail" alt="...">
+            </a> 
+          <i class="bi bi-heart-fill text-secondary position-absolute" onclick="save_wishlist(this)" style="top:10px;right:20px;cursor: pointer;"></i>
+          </div>
+          
+          <div class="card-body">
+            <div class="d-flex justify-content-strat">
+            <h5 class="card-title d-inline  card-title-font">{{Products.title|truncatechars:25}}</h5>
+            
+            </div>
+            <div class="d-flex">
+              <span class="text-secondary" style="font-size: 10px;">(red, stobery)</span>
+            </div>
+            <div class="d-flex justify-content-strat" style="font-size: 13px;">
+              {% if Products.tot_review != 0 %}
+              {% if Products.tot_review >= '3.0' %}
+              <span class="badge bg-success py-1 text-center">
+                  {{Products.tot_review}}
+              </span>
+              {% elif Products.tot_review >= '2.0' %}
+              <span class="badge bg-warning py-1 text-center">
+                {{Products.tot_review}}
+              </span>
+              {%else%}
+              <span class="badge bg-danger py-1 text-center">
+                {{Products.tot_review}}
+              </span>
+              {%endif%}
+              <span class="text-muted" style="margin-left: 10px;">({{Products.tot_r}})</span>
+              {%else%}
+              <span style="padding: 10.1px;"></span>
+              {%endif%}
+            </div>
+            <div class="d-flex justify-content-between">
+              {% if Products.discount != 0 %}
+              <span class="text-success fw-bold">₹{{Products.get_discount}}</span>
+              <span class="text-decoration-line-through text-muted">₹{{Products.price}}</span>
+              <span class="text-success discount">{{Products.discount}}% off</span>
+              {%else%}
+              <span class="text-success fw-bold">₹{{Products.price}}</span>
+  
+              {%endif%}
+            </div>
+            <div class="d-flex">
+              <span class="text-success fw-bold" style="font-size: small;">Lowest price in 15 days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9 p-5 col-sm-12">
+          <div class="row justify-content-center">
+              <div class="col-md-6 col-sm-6">
+                <form action="" method="post">
+                  {% csrf_token %}
+                    <div class="form-group">
+                        <label for="rat1"> Rating </label>
+                        <div class="input-group fs-3 text-secondary  p-3 hstack gap-3">
+                          <di id="rat1">
+                            
+                            <svg name="rat1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                          
+                          </di>
+                          <div id="rat2">
+                            <svg xmlns="http://www.w3.org/2000/svg"  width="32" height="32" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                          </div>
+                          <div id="rat3">
+                            <svg xmlns="http://www.w3.org/2000/svg"  width="32" height="32" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                          </div>
+                          <div id="rat4">
+                            <svg xmlns="http://www.w3.org/2000/svg"  width="32" height="32" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                          </div>
+                          <div id="rat5">
+                            <svg xmlns="http://www.w3.org/2000/svg"  width="32" height="32" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                            </svg>
+                          </div> 
+                        </div>
+                       
+                    </div>
+                    {{form.as_p}}
+                    <div class="row p-2 justify-content-center">
+                        <div class="col-2">
+                            <input type="submit" value="Save" class="btn btn-success">
+
+                        </div>
+                    </div>
+              </div>
+          </div>
+         
+          </form>
+      </div>
+      {% if messages %}
+      {% for message in messages %}
+
+      {% if message.tags == 'success' %}
+      <div class="d-inline  position-absolute text-end" style="top: 98%;right: 0px;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+          <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+          </symbol>
+          <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </symbol>
+          <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </symbol>
+        </svg>
+        <div class="alert bg-dark border border-warning alert-success d-flex shadow" style="display: inline-flex !important;"  role="alert">
+          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+          <div class="fw-bold" >
+            {{ message }}
+          </div>
+        </div>
+        </div>
+      {% endif %}
+
+      {% endfor %}
+
+      {% endif %}
+</div>
+
+{%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+
+if('{{form.rating.value}}' <=5)
+{
+  if('{{form.rating.value}}' ==5){
+    
+  $('#rat1').addClass('text-success');
+  $('#rat2').addClass('text-success');
+  $('#rat3').addClass('text-success');
+  $('#rat4').addClass('text-success');
+  $('#rat5').addClass('text-success');
+  }
+  if('{{form.rating.value}}' ==4){
+    
+    $('#rat1').addClass('text-success');
+    $('#rat2').addClass('text-success');
+    $('#rat3').addClass('text-success');
+    $('#rat4').addClass('text-success');
+    }
+
+    if('{{form.rating.value}}' ==3){
+    
+    $('#rat1').addClass('text-success');
+    $('#rat2').addClass('text-success');
+    $('#rat3').addClass('text-success');
+    
+    }
+    if('{{form.rating.value}}' ==2){
+    
+    $('#rat1').addClass('text-warning');
+    $('#rat2').addClass('text-warning');
+    
+    
+    }
+    if('{{form.rating.value}}' ==1){
+    
+    $('#rat1').addClass('text-danger');
+    
+    
+    }
+
+}
+ $('#rat1').click(function() {
+  $('#rat4').removeClass('text-success');
+  $('#rat5').removeClass('text-success');
+  $('#rat3').removeClass('text-success');
+  $('#rat2').removeClass('text-success');
+  $('#rat2').removeClass('text-warning');
+
+  $('#rat4').removeClass('text-secondary');
+  $('#rat5').removeClass('text-secondary');
+  $('#rat3').removeClass('text-secondary');
+  $('#rat2').removeClass('text-secondary');
+
+  $('#rat1').toggleClass('text-danger')
+  document.getElementById('rating').value='1'
+
+ });
+ $('#rat2').click(function() {
+  $('#rat1').removeClass('text-danger');
+
+  $('#rat4').removeClass('text-success');
+  $('#rat5').removeClass('text-success');
+  $('#rat3').removeClass('text-success');
+
+  $('#rat1').addClass('text-warning');
+  $('#rat2').toggleClass('text-warning');
+  document.getElementById('rating').value='2'
+
+ });
+ $('#rat3').click(function() {
+  $('#rat1').removeClass('text-warning');
+  $('#rat1').removeClass('text-danger');
+
+  $('#rat2').removeClass('text-warning');
+
+  $('#rat4').removeClass('text-success');
+  $('#rat5').removeClass('text-success');
+
+  $('#rat1').addClass('text-success');
+  $('#rat2').addClass('text-success');
+  $('#rat3').toggleClass('text-success');
+  document.getElementById('rating').value='3'
+
+ });
+ $('#rat4').click(function() {
+
+  $('#rat5').removeClass('text-success');
+  $('#rat1').removeClass('text-danger');
+
+
+  $('#rat1').addClass('text-success');
+  $('#rat2').addClass('text-success');
+  $('#rat3').addClass('text-success');
+  $('#rat4').toggleClass('text-success');
+  document.getElementById('rating').value='4'
+
+ });
+ $('#rat5').click(function() {
+  $('#rat1').removeClass('text-danger');
+  $('#rat1').removeClass('text-warning');
+  $('#rat2').removeClass('text-warning');
+
+  $('#rat1').addClass('text-success');
+  $('#rat2').addClass('text-success');
+  $('#rat3').addClass('text-success');
+  $('#rat4').addClass('text-success');
+  $('#rat5').toggleClass('text-success');
+  document.getElementById('rating').value='5'
+
+
+ });
+</script>
+{%endblock%}

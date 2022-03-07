@@ -1,5 +1,6 @@
 from django.shortcuts import render,HttpResponse
 from .models import Product, Product_review,Cart,Cart_item,Category,Product_category,Product_Viewed
+from accounts.models import CustomUser
 from threading import Thread
 import time
 import datetime
@@ -11,6 +12,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 from itertools import chain 
 from django.views.decorators.cache import never_cache
+from django.utils import timezone
+from myshop.forms import ProductReviewForm
+from django.contrib import messages
 
 def my_fun(desc):
     for t in desc:
@@ -93,7 +97,6 @@ def product_detail(request,slug):
     products_obj=Product_category.objects.filter(product_id=product_detail).first()
 
     category_obj=Category.objects.get(id=products_obj.category_id.id)
-    print(category_obj)
     products_obj=Product_category.objects.filter(category_id__title__contains=category_obj)
     # print(products_obj.product_id.title)
 
@@ -103,9 +106,10 @@ def product_detail(request,slug):
     is_purchesed=False
     if request.user.is_authenticated:
         pl=Product_Viewed.objects.filter(Q(user_id=request.user) & Q(product_id=product_detail)).first()
-        is_purchesed=Product_review.objects.filter(Q(product_id=product_detail) & Q(user_id=request.user))
-        if is_purchesed is not None:
-            is_purchesed=True
+        is_purchesed_obj=Product_review.objects.filter(Q(product_id=product_detail) & Q(user_id=request.user))
+        # print(is_purchesed_obj)
+        # if is_purchesed_obj.exists():
+        is_purchesed=True
         if pl is not None:
             pl.tot_views=pl.tot_views+1
             pl.save()
@@ -118,22 +122,61 @@ def product_detail(request,slug):
     return render(request, template_name='myshop/product-details.html',context={'Produts':products_obj,'Product':product_detail,'Reviews':list_reviews,'average_review':average_review,'is_purchase':is_purchesed})
 
 @csrf_exempt
-def product_reviews(request,id,slug):
+def product_reviews_list(request,id,slug):
     
     product_obj=get_object_or_404(Product, slug=slug,id=id)
-    if request.POST:
-        review_filtesr=''
-        get_val=request.POST.get('filter')
-        if get_val=='MOST_RECENT':
-            review_filtesr='-published_at'
-        elif get_val=='POSITIVE_FIRST':
-            review_filtesr='-rating'
-        elif get_val=='NEGATIVE_FIRST':
-            review_filtesr='rating'
-        product_reviews_obj=Product_review.objects.filter(product_id=product_obj).order_by(review_filtesr)
-        review_filtesr=''
-        return render(request, template_name='myshop/filter-table.html',context={'Products':product_obj,'Reviews':product_reviews_obj})
+    product_reviews_obj=Product_review.objects.filter(product_id=product_obj)
+    if product_reviews_obj.exists():
+        if request.POST:
+            review_filtesr=''
+            get_val=request.POST.get('filter')
+            if get_val=='MOST_RECENT':
+                review_filtesr='-published_at'
+            elif get_val=='POSITIVE_FIRST':
+                review_filtesr='-rating'
+            elif get_val=='NEGATIVE_FIRST':
+                review_filtesr='rating'
+            product_reviews_obj=product_reviews_obj.order_by(review_filtesr)
+            review_filtesr=''
+            return render(request, template_name='myshop/filter-table.html',context={'Products':product_obj,'Reviews':product_reviews_obj})
+        else:
+            product_reviews_obj=product_reviews_obj.order_by('-rating')
+    
+        return render(request, template_name='myshop/review.html',context={'Products':product_obj,'Reviews':product_reviews_obj})
     else:
-        product_reviews_obj=Product_review.objects.filter(product_id=product_obj).order_by('-rating')
-   
-    return render(request, template_name='myshop/review.html',context={'Products':product_obj,'Reviews':product_reviews_obj})
+        return redirect('product_detail',product_obj.slug)
+
+@login_required(login_url='/accounts/login/')
+def product_reviews_form(request,id,slug):
+    product_obj=get_object_or_404(Product, slug=slug,id=id)
+    product_review_form=ProductReviewForm()
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    p_r=Product_review.objects.filter(user_id=user_obj,product_id=product_obj)
+    is_exists=False
+    if p_r.exists():
+        p_r=Product_review.objects.get(user_id=user_obj,product_id=product_obj)
+
+        product_review_form=ProductReviewForm(instance=p_r)
+        is_exists=True
+    if request.method=='POST':
+        product_review_form=ProductReviewForm(request.POST)
+          
+        if product_review_form.is_valid():
+
+            title=product_review_form.cleaned_data['title']
+            desc=product_review_form.cleaned_data['content']
+            rating=product_review_form.cleaned_data['rating']
+            if is_exists:
+                p_r.rating=rating
+                p_r.content=desc
+                p_r.title=title
+                p_r.save()
+                messages.success(request, 'Your Reviews updated...!')
+            else:
+
+                reviews_obj=Product_review.objects.create(user_id=request.user,product_id=product_obj,title=title,content=desc,rating=5,is_publish=True,published_at=timezone.now())
+                messages.success(request, 'Your Reviews sumnited...!')
+                # reviews_obj.save()
+            # product_review_form=ProductReviewForm()
+
+    return render(request, template_name='myshop/rating-review-form.html',context={'Products':product_obj,'form':product_review_form})
