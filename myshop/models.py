@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
 # Create your models here.
 
 class Product(models.Model):
@@ -59,8 +60,12 @@ class Product(models.Model):
         return price
     @property
     def tot_r(self):
-        tot = Product_review.objects.filter(product_id=self.id,is_publish=True)
-        return len(tot)
+        tot = Product_review.objects.filter(product_id=self.id,is_publish=True).count()
+        return tot
+    @property
+    def tot_rating(self):
+        tot = Product_review.objects.filter(product_id=self.id,is_publish=True,rating__isnull=False).count()
+        return tot
     @property
     def tot_review(self):
         '''(5 * 252 + 4 * 124 + 3 * 40 + 2 * 29 + 1 * 33) / 478 = 4.11'''
@@ -94,13 +99,15 @@ class Product_meta(models.Model):
     product_id = models.OneToOneField(to=Product,db_index=True, on_delete=models.CASCADE)
     key = models.CharField(max_length=100,unique=True)
     content = models.TextField(null=True,blank=True)
-
+def validate_rating_number(value):
+    if value>5 or value<1:  # Your conditions here
+        raise ValidationError(' Rating value is between (1-5) but you given %s' % value)
 class Product_review(models.Model):
     user_id = models.ForeignKey(to=CustomUser,db_index=True,null=True, on_delete=models.CASCADE)
     product_id = models.ForeignKey(to=Product,db_index=True,null=True, on_delete=models.CASCADE)
     parent_id = models.ForeignKey(to="self",db_index=True, on_delete=models.CASCADE,null=True,blank=True)
     title = models.CharField(max_length=100,blank=True,null=True)
-    rating = models.PositiveIntegerField(blank=True,null=True)
+    rating = models.PositiveIntegerField(blank=True,null=True,validators=[validate_rating_number])
     is_publish = models.BooleanField()
     created_at = models.DateTimeField(editable=False,verbose_name=_("Creat date"), auto_now_add=True, null=True)
     published_at = models.DateTimeField(verbose_name=_('publish date'),auto_now_add=False,null=True)

@@ -119,7 +119,7 @@ class ProductMetaAdmin(admin.ModelAdmin):
 @admin.register(Product_review)
 class ProductReiewAdmin(admin.ModelAdmin):
     using='mysql'
-    list_display=['product_id','parent_id','title','rating','is_publish','created_at','published_at','content']
+    list_display=['user_id','product_id','parent_id','title','rating','is_publish','created_at','published_at','content']
     search_fields = ['title','rating']
     def save_model(self, request, obj, form, change):
         # Tell Django to save objects to the 'other' database.
