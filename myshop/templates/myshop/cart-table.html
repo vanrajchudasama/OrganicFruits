@@ -1,0 +1,127 @@
+
+<div class="row  mt-5" id="mytable">
+<div class="col-md-8 col-sm-12" >
+
+
+
+<div class="table-responsive border border-dark rounded m-0 p-0">
+     
+  <div class="text-center bg-dark text-white p-2"><strong>My Cart ({{totale_cart_items}})</strong></div>
+    
+  <table class="table table-hover mb-0">
+    {% if cart_items %}
+      <thead>
+        <tr>
+          <th scope="col">Serial no.</th>
+          <th scope="col">Image</th>
+          <th scope="col">Price</th>
+          <th scope="col">Quntity</th>
+          <th scope="col" class="text-end">Total</th>
+          <th scope="col">Action</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <th scope="row">{{ forloop.counter }}</th>
+          <td><a href="{{item.product_id.get_absolute_url}}"><img src="{{item.product_id.img.url}}" height="60" width="60" alt=""></a></td>
+          <td>{{item.price}}</td>
+          <td  class="justify-content-end">
+            {% if item.quantity > 1 %}
+                <div class="input-group d-flex">
+                  <span class="input-group-btn">
+                      <button  type="button"  style="width:25px !important;height: 25px !important " class="quantity-left-minus btn btn-danger btn-sm btn-number p-1"  onclick="minus_quantity ('{{ item.id}}','delete')" data-type="minus" data-field="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 20">
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+                        </svg>
+                      </button>
+                  </span>
+                 <span  class="px-2 text-muted border ">{{item.quantity}}</span>
+                  <span class="input-group-btn">
+                      <button type="button" style="width:25px !important;height: 25px !important " class="quantity-right-plus btn btn-sm btn-success btn-number p-1" onclick="minus_quantity ('{{ item.id}}','add')" data-type="plus" data-field="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 20">
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                        </svg>
+                      </button>
+                  </span>
+              </div>
+           {%else%}
+           <div class="input-group d-flex">
+            <span class="input-group-btn">
+                <button  type="button"  style="width:25px !important;height: 25px !important " class="quantity-left-minus btn btn-danger btn-sm btn-number p-1"  data-type="minus" data-field="" disabled>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 20">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+                  </svg>
+                </button>
+            </span>
+           <span class="px-2 text-muted border ">{{item.quantity}}</span>
+            <span class="input-group-btn">
+                <button  type="button" style="width:25px !important;height: 25px !important " class="quantity-right-plus btn btn-sm btn-success btn-number p-1" onclick="minus_quantity ('{{ item.id}}','add')" data-type="plus" data-field="">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 20">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                  </svg>
+                </button>
+            </span>
+        </div>
+           {%endif%}
+          </td>
+          <td class="text-end">
+            <span id="sub_totle{{item.id}}"> {{item.get_subtotal}}</span>
+           </td>
+          <td>
+            
+              <button value="{% url 'delete_cart_item' item.id%}" onclick="delete_cart_item(this,'{% url 'delete_cart_item' item.id%}' )" type="button" class="btn btn-sm btn-outline-danger" title="delete"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+              </svg></button>
+           
+        </tr>
+       {%endfor%}
+       
+      </tbody>
+      {%else%}
+      <div class="text-muted p-5 fw-bold text-center">
+        <span>Empty</span>
+      </div>
+  {%endif%}
+
+  </table>
+  <div id="total" class="shadow  text-white p-2 m-0 text-end">
+    <button class="btn shadow btn-success">Place Order</button>
+  </div>
+
+ 
+ 
+  </div>
+</div>
+<div class="col-md-3 col-sm-12 border" style="font-family: Arial, Helvetica, sans-serif"> 
+  <div class="p-2 bg-dark text-white row text-center border-bottom rounded-top">
+    <span class="p-1">Price Details</span>
+</div>
+<div class="row p-3 border-bottom">
+    <table class="borderless p-2">
+        <tr>
+            <td>Pirce <span class="text-muted">({{totale_cart_items}} item)</span></td>
+            <td class="text-end"> {{product_total|floatformat:"1"}}</td>
+        </tr>
+        <tr>
+            <td>Discount</td>
+            <td class="text-end text-success">-{{discount|floatformat:"1"}}</td>
+        </tr>
+        <tr>
+            <td>Delivery Charges</td>
+            <td class="text-end">50.0</td>
+        </tr>
+    </table>
+</div>
+<div class="row border-bottom p-1">
+    <div class=" d-flex justify-content-between">
+    <span><h5>Total : </h5></span>
+    <span><h5>{{total|floatformat:"1"}}</h5></span>
+    </div>
+</div>
+<div class="row p-2  border-bottom">
+    <span class="text-success fw-bold">You will save ₹{{discount|floatformat:"1"}} on this order</span>
+</div>
+</div>
+</div>

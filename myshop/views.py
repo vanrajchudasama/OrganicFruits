@@ -1,4 +1,5 @@
 from django.shortcuts import render,HttpResponse
+from django.http import JsonResponse
 from .models import Product, Product_review,Cart,Cart_item,Category,Product_category,Product_Viewed
 from accounts.models import CustomUser
 from threading import Thread
@@ -9,12 +10,16 @@ from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Avg, Count, Min, Sum
+
 # Create your views here.
 from itertools import chain 
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from myshop.forms import ProductReviewForm
 from django.contrib import messages
+import secrets
+import uuid
 
 def my_fun(desc):
     for t in desc:
@@ -22,6 +27,18 @@ def my_fun(desc):
         print(p)
         return p
     return False
+def get_total(request):
+
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    cart_obj=Cart.objects.filter(user_id=user_obj).first()
+    total_price=0
+    tot_product=0
+    items=Cart_item.objects.filter(cart_id=cart_obj)#.aggregate(Sum('price'))
+    for item in items:
+        total_price=(total_price+(item.price*item.quantity))
+        tot_product=(tot_product+(item.product_id.price*item.quantity))
+    return total_price,tot_product #int(total_price['price__sum'])*int(total_quantity['quantity__sum'])
+
 def home(request):
     list_product={}
     start_date = datetime.date.today()
@@ -180,3 +197,97 @@ def product_reviews_form(request,id,slug):
             # product_review_form=ProductReviewForm()
 
     return render(request, template_name='myshop/rating-review-form.html',context={'Products':product_obj,'form':product_review_form})
+
+@login_required(login_url='/accounts/login/')
+def add_to_cart(request,slug,id):
+    product_obj=get_object_or_404(Product, slug=slug,id=id)
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    cart_obj=Cart.objects.filter(user_id=user_obj)
+    is_user_cart=False
+    if cart_obj.exists():
+        cart_obj=Cart.objects.get(user_id=user_obj)
+
+        cart_item_obj=Cart_item.objects.filter(product_id=product_obj,cart_id=cart_obj)
+        if cart_item_obj.exists():
+            cart_item_obj=Cart_item.objects.get(product_id=product_obj,cart_id=cart_obj)
+            cart_item_obj.quantity=cart_item_obj.quantity+1
+            cart_item_obj.save()
+            is_user_cart=True
+        else:
+            cart_item_obj=Cart_item.objects.create(product_id=product_obj,cart_id=cart_obj
+            ,sku='nkew',price=product_obj.get_discount,discount=product_obj.discount
+            ,quantity='1',active=True,content='')
+    else:
+
+        session_id,token_id=make_token()
+        Cart.objects.get_or_create(
+            user_id=user_obj,session_id=session_id,token=token_id,status='new'
+            ,first_name=user_obj.first_name,last_name=user_obj.last_name,mobile=user_obj.mobile
+            ,email=user_obj.email,line1='',line2='',city=''
+            ,province='',country='',content=''
+            )
+        
+        cart_obj=Cart.objects.get(user_id=user_obj)
+        cart_item_obj=Cart_item.objects.create(product_id=product_obj,cart_id=cart_obj
+        ,sku='nkew',price=product_obj.get_discount,discount=product_obj.discount
+        ,quantity='1',active=True,content='')
+    return redirect('cart')
+
+
+@login_required(login_url='/accounts/login/')
+def go_to_cart(request):
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    cart_obj=Cart.objects.get(user_id=user_obj)
+    cart_items_obj=Cart_item.objects.filter(cart_id=cart_obj)
+    total,p_total=get_total(request)
+    discount=p_total-total
+
+    totale_cart_items=cart_items_obj.count()
+    return render(request, template_name='myshop/my-cart.html',context={'cart_items':cart_items_obj,'total':total
+    ,'totale_cart_items':totale_cart_items,'discount':discount,'product_total':p_total})
+
+
+@login_required(login_url='/accounts/login/')
+def delete_cart_item(request,id):
+    item=Cart_item.objects.get(pk=id)
+    item.delete()
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    cart_obj=Cart.objects.get(user_id=user_obj)
+    cart_items_obj=Cart_item.objects.filter(cart_id=cart_obj)
+    total,p_total=get_total(request)
+    discount=p_total-total
+    totale_cart_items=cart_items_obj.count()
+    return render(request, template_name='myshop/cart-table.html',context={'cart_items':cart_items_obj,'total':total
+    ,'totale_cart_items':totale_cart_items,'discount':discount,'product_total':p_total})
+
+@login_required(login_url='/accounts/login/')
+def change_cart_item(request):
+    if request.POST:
+        id=request.POST.get('id')
+        option=request.POST.get('option')
+        if option=='delete':
+            cart_item_obj=Cart_item.objects.get(pk=id)
+            cart_item_obj.quantity=cart_item_obj.quantity-1
+            cart_item_obj.save()
+        elif option=='add':
+            cart_item_obj=Cart_item.objects.get(pk=id)
+            cart_item_obj.quantity=cart_item_obj.quantity+1
+            cart_item_obj.save()
+
+    user_obj=CustomUser.objects.get(id=request.user.id)
+    cart_obj=Cart.objects.get(user_id=user_obj)
+    cart_items_obj=Cart_item.objects.filter(cart_id=cart_obj)
+    total,p_total=get_total(request)
+    discount=p_total-total
+    totale_cart_items=cart_items_obj.count()
+    return render(request, template_name='myshop/cart-table.html',context={'cart_items':cart_items_obj,'total':total
+    ,'totale_cart_items':totale_cart_items,'discount':discount,'product_total':p_total})
+
+def make_token():
+    """
+    Creates a cryptographically-secure, URL-safe string
+    """
+    my_uuid = uuid.uuid4()
+    token = uuid.uuid4()
+    # return secrets.token_urlsafe(16)
+    return str(my_uuid),str(token)

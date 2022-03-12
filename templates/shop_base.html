@@ -54,7 +54,16 @@
           <div class="text-end">
             {% if user.is_authenticated %}
             <a href="{% url 'profile'%}" type="button" class="btn btn-outline-light me-2" >My Account</a>
-            <a href="{% url 'logout'%}" type="button" class="btn btn-outline-danger me-2" >Logout</a>
+            <a href="{% url 'cart'%}" type="button" class="btn btn-outline-light me-2 position-relative" ><i class="bi bi-cart-check-fill"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {%if is_large %}
+                {{total_cart_item}}
+                {%else%}
+                {{total_cart_item}}+
+                {%endif%}
+                <span class="visually-hidden">total cart items</span>
+              </span>
+            </a>
 
             {%else%}
             <a href="{% url 'login'%}" type="button" class="btn btn-outline-light me-2" >Login</a>

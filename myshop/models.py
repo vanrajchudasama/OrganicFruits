@@ -206,6 +206,16 @@ class Cart_item(models.Model):
     created_at = models.DateTimeField(editable=False,verbose_name=_("Create date"), auto_now_add=True, null=True)
     updated_at  = models.DateTimeField(editable=False,verbose_name=_("Update date"), auto_now_add=True, null=True)
     content = models.TextField()
+    @property
+    def get_subtotal(self):
+        sub_total=self.quantity*self.price
+        
+        return sub_total
+    def get_total(self):
+        total_price=Cart_item.objects.filter(cart_id=self.cart_id).aggregate(Sum('price'))
+        total_quantity=Cart_item.objects.filter(cart_id=self.cart_id).aggregate(Sum('quantity'))
+        print(total_price,total_quantity)
+        return int(total_price['price__sum'])*int(total_quantity['quantity__sum'])
     def __str__(self):
         return str(self.product_id)
 
