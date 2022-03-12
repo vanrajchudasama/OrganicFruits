@@ -34,7 +34,7 @@
                 <img src={{Product.img.url}} class="img-fluid" alt="">
                 <div class="d-flex  hstack gap-3 justify-content-center">
                   
-                        <button type="button" class="btn btn-warning">Add To Cart</button>
+                        <a href="{%url 'my_cart' Product.slug Product.id  %}" type="button" class="btn btn-warning">Add To Cart</a>
 
                         <button type="button" class="btn btn-warning" style="background-color: rgb(255, 145, 0);">Buy Now</button>
                    

@@ -1,0 +1,28 @@
+<div class="p-2 bg-dark text-white row text-center border-bottom rounded-top">
+    <span class="p-1">Price Details</span>
+</div>
+<div class="row p-3 border-bottom">
+    <table class="borderless p-2">
+        <tr>
+            <td>Pirce <span class="text-muted">({{totale_cart_items}} item)</span></td>
+            <td class="text-end"> {{product_total|floatformat:"1"}}</td>
+        </tr>
+        <tr>
+            <td>Discount</td>
+            <td class="text-end text-success">-{{discount|floatformat:"1"}}</td>
+        </tr>
+        <tr>
+            <td>Delivery Charges</td>
+            <td class="text-end">50.0</td>
+        </tr>
+    </table>
+</div>
+<div class="row border-bottom p-1">
+    <div class=" d-flex justify-content-between">
+    <span><h5>Total : </h5></span>
+    <span><h5>{{total|floatformat:"1"}}</h5></span>
+    </div>
+</div>
+<div class="row p-2  border-bottom">
+    <span class="text-success fw-bold">You will save ₹{{discount|floatformat:"1"}} on this order</span>
+</div>

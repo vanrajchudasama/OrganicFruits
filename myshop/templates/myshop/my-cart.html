@@ -1,0 +1,79 @@
+{% extends 'shop_base.html'%}
+{%load static%}
+{%block title%}Home{%endblock%}
+{%block style%}
+  <style>
+    .card-title-font{
+      font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .discount{
+      font-weight: 500px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+  </style>
+{%endblock%}
+
+{%block content%}
+<div class="row" id="mytable">
+    {% include 'myshop/cart-table.html'%}
+ 
+</div>
+{%endblock%}
+
+{%block script%}
+{{block.super}}
+<script>
+
+  let spinner = document.getElementById('spinner');
+  let list = document.getElementById('list');
+
+  function save_wishlist(element){
+    element.classList.toggle('text-danger');
+  }
+  function minus_quantity (id,option){
+    myData={csrfmiddlewaretoken: '{{ csrf_token }}' ,'id':id,'option':option}
+    myurl="{% url 'change_cart_item'%}"
+    $.ajax({
+         // get the form data
+        type:'post', // GET or POST
+        url: myurl, // the file to call
+        data: myData,
+        success: function (data) {
+        // console.log("success");
+        $('#mytable').replaceWith($('#mytable').html(data));
+       
+      },  
+      error: function () {
+        console.log("error");
+      },
+    });
+
+  };
+  $('#q_plus').click(function (){
+    alert('hihi')
+  });
+  function delete_cart_item(element,url) {
+    // filter_value=document.getElementById('filter').velues;
+    $.ajax({
+         // get the form data
+        type:'post', // GET or POST
+        url: url, // the file to call
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        success: function (data) {
+        // console.log("success");
+        
+        $('#mytable').replaceWith($('#mytable').html(data));
+        
+      },
+      error: function () {
+        console.log("error");
+      },
+    });
+  }
+</script>
+{%endblock%}
